@@ -11,9 +11,9 @@ User = get_user_model()
 # try to get the hostname and Ip of where
 host_name = socket.gethostname() 
 get_host_ip = socket.gethostbyname(host_name) 
-host_ip = '51.89.232.89'
+# host_ip = '51.89.232.89'
 # # serviceurl = 'http://www.geoplugin.net/json.gp?ip='+host_ip
-serviceurl = 'http://ip-api.com/json/'+host_ip
+serviceurl = 'http://ip-api.com/json/'+get_host_ip
 
 print('Retrieving', serviceurl)
 uh = urllib.request.urlopen(serviceurl)
