@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<title>Message Intelligence Board - DigiPolice</title>
+<h5 class="text-muted text-center m-4">Hello {{request.user}}, Welcome to UK DigiPolice Intelligence</h5>
+	
+<div class="container" style="font-size: 20px">
+    <div class="row">
+		<div class="col-md-6">
+			<p class="lead">Realtime Messages</p>
+			<div class="card">
+				<div class="card-body" id="id_chat_item_container">
+				</div>
+			</div>
+			<div class="card mt-2">
+				<div class="card-body">
+					<input type="text" class="form-control" id="id_message_send_input" placeholder="click to report a crime or suspicious activity near you..." />
+					<button type="submit" class="btn btn-primary mt-2" id="id_message_send_button">Send Message  <i class="fa fa-paper-plane"></i></i></button>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-md-6">
+			<p class="lead">Community Reporting Messages</p>
+			{% for message in messages %}
+			<div class="card mt-2">
+				<div class="card-body" id="id_chat_item_container">
+						<small><span class="fw-bold">Sender</span>: {{message.username }} </small><br>
+						<small><span class="fw-bold">Message</span>: <span class="text-danger">{{message.content}}</span></small><br>
+						<small><span class="fw-bold">Location</span>: {{ message.location }}</small><br>
+						<small><span class="fw-bold">Ip Address</span>: <div class="badge bg-warning">{{ message.ip_address}}</div></small><br>
+						<small><span class="fw-bold">Date</span>: <div class="badge bg-secondary">{{ message.created_at}}</div></small>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	<br/>
+	
+	
+</div>
+
+<script>
+	// Create a new column with the chat message
+	
+
+    //   const messageParagraph = document.createElement('p');
+    //   messageParagraph.textContent = message.message;
+	// websocket
+	const chatSocket = new WebSocket(
+		'ws://' + window.location.host + '/ws/chat/'
+	);
+
+	chatSocket.onmessage = function (event) {
+		const data = JSON.parse(event.data);
+		const message = data.message;
+		const user = data.user;
+		
+		// const chatMessagesContainer = document.getElementById('id_chat_item_container');
+		
+		// const newCol = document.createElement('div');
+		// newCol.className = 'col-md-4';
+
+		// const card = document.createElement('div');
+		// card.className = 'card';
+
+		// const cardBody = document.createElement('div');
+		// cardBody.className = 'card-body';
+		
+		// const messageParagraph = document.createElement('p');
+      	// messageParagraph.textContent = message.message;
+		
+		// cardBody.appendChild(messageParagraph);
+		
+		// card.appendChild(cardBody);
+		
+		// newCol.appendChild(card);
+		
+		// chatMessagesContainer.appendChild(newCol);
+		$('#id_chat_item_container').append(`<div class="col-md-6 m-2">
+			<div class="card"><div class="card-body" id="id_chat_item_container">
+				<small><span class="fw-bold">Sender</span>: ${data.user} </small><br>
+				<small><span class="fw-bold">Message</span>: <span class="text-danger">${data.message}</span></small><br>
+				<small><span class="fw-bold">Location</span>: ${data.location}</small><br>
+				<small><span class="fw-bold">Location</span>: ${data.ip_address}</small><br>
+				<small><span class="fw-bold">Status</span>: <div class="badge bg-success">ongoing</div></small>
+			</div></div></div>`);
+	};
+
+	$('#id_message_send_button').click(function () {
+		const messageInput = $('#id_message_send_input');
+		const message = messageInput.val();
+		chatSocket.send(JSON.stringify({
+			'message': message
+		}));
+		messageInput.val('');
+	});
+</script>
+{% endblock %}
+
