@@ -16,8 +16,6 @@ services:
     env_file: .env
     networks:
       - backendnet
-    depends_on:
-      - db
     mem_limit: 2.8g
 
   nginx:
