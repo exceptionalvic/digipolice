@@ -2,9 +2,9 @@ name: DigiPolice Deployment pipeline
 
 on:
   push:
-    branches: [ develop, develop-saas, staging, main, ]
+    branches: [ main ]
   pull_request:
-    branches: [ develop, develop-saas, staging, main, ]
+    branches: [ main ]
 env:
   WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
   NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx

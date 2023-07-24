@@ -5,7 +5,6 @@ services:
     environment:
       - DJANGO_MANAGEPY_MIGRATE=on
       - DJANGO_MANAGEPY_COLLECTSTATIC=on
-      - DJANGO_MANAGEPY_CREATE_SUPERUSER=on
     image: "${WEB_IMAGE}"
     container_name: web
     command: gunicorn chatapp.wsgi:application --timeout 60 --bind 0.0.0.0:8000
@@ -25,7 +24,6 @@ services:
     environment:
       - DJANGO_MANAGEPY_MIGRATE=off
       - DJANGO_MANAGEPY_COLLECTSTATIC=off
-      - DJANGO_MANAGEPY_CREATE_SUPERUSER=off
     image: "${NGINX_IMAGE}"
     container_name: nginx
     restart: always
