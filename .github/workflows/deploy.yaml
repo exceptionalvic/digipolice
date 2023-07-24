@@ -76,7 +76,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.cd.yml root@${{ secrets.VULTR_IP_ADDRESS }}:/app
+          scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.cd.yaml root@${{ secrets.VULTR_IP_ADDRESS }}:/app
           ssh -o StrictHostKeyChecking=no root@${{ secrets.VULTR_IP_ADDRESS }} << 'ENDSSH'
             cd /app
             source .env
@@ -90,7 +90,7 @@ jobs:
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
             
-            docker-compose -f docker-compose.cd.staging.yml up -d
+            docker-compose -f docker-compose.cd.staging.yaml up -d
           ENDSSH
   
   
