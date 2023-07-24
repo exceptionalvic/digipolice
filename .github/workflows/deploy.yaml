@@ -85,12 +85,10 @@ jobs:
             docker rm web
             docker stop nginx
             docker rm nginx
-            
             docker rmi $(docker images -q)
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
-            
-            docker-compose -f docker-compose.cd.staging.yaml up -d
+            docker-compose -f docker-compose.cd.yaml up -d
           ENDSSH
   
   
