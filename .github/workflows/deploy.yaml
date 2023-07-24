@@ -1,0 +1,96 @@
+name: DigiPolice Deployment pipeline
+
+on:
+  push:
+    branches: [ develop, develop-saas, staging, main, ]
+  pull_request:
+    branches: [ develop, develop-saas, staging, main, ]
+env:
+  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
+  NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
+
+jobs:
+  
+  build-stage:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v2
+      - name: Add environment variables to .env
+        run: |
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo NAMESPACE="${{ secrets.NAMESPACE }}" >> .env
+          echo PERSONAL_ACCESS_TOKEN="${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env
+          echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
+          echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          
+
+      - name: Set environment variables
+      # - uses: DeLaGuardo/setup-clojure@2.0
+        run: |
+          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
+          echo "DB_IMAGE=$(echo ${{env.DB_IMAGE}} )" >> $GITHUB_ENV
+          
+      - name: Log in to GitHub Container Registry
+        run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Pull images
+        run: |
+          docker pull "${{ env.WEB_IMAGE }}" || true
+          docker pull "${{ env.NGINX_IMAGE }}" || true
+      - name: Build staging images
+        run: |
+          docker-compose -f docker-compose.ci.staging.yml build
+      - name: Push images
+        run: |
+          docker push "${{ env.WEB_IMAGE }}"
+          docker push "${{ env.NGINX_IMAGE }}"
+  deploy-staging:
+    name: Deploy to Vultr 
+    runs-on: ubuntu-latest
+    needs: build-staging
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v2
+      - name: Add environment variables to .env
+        run: |
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo NAMESPACE="${{ secrets.NAMESPACE }}" >> .env
+          echo PERSONAL_ACCESS_TOKEN="${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env
+          echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
+          echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+      - name: Add the private SSH key to the ssh-agent
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+      - name: Deploy to Vultr VPS
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.cd.staging.yml root@${{ secrets.VULTR_IP_ADDRESS }}:/app
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.VULTR_IP_ADDRESS }} << 'ENDSSH'
+            cd /app
+            source .env
+            docker login ghcr.io -u ${{ secrets.NAMESPACE }} -p ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+            docker stop web
+            docker rm web
+            docker stop nginx
+            docker rm nginx
+            
+            docker rmi $(docker images -q)
+            docker pull $WEB_IMAGE
+            docker pull $NGINX_IMAGE
+            
+            docker-compose -f docker-compose.cd.staging.yml up -d
+          ENDSSH
+  
+  

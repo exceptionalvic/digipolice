@@ -21,7 +21,7 @@ try:
     '''load local dev env file'''
     load_dotenv(os.path.join(BASE_DIR, '.env.dev'))
 except:
-    '''try to load Docker Staging env file'''
+    '''try to load env file'''
     load_dotenv(os.path.join(BASE_DIR, '.env'))
 else:
     '''load production env file'''

@@ -1,0 +1,88 @@
+version: "3.7"
+
+services:
+  web:
+    environment:
+      - DJANGO_MANAGEPY_MIGRATE=on
+      - DJANGO_MANAGEPY_COLLECTSTATIC=on
+      - DJANGO_MANAGEPY_CREATE_SUPERUSER=on
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - "${WEB_IMAGE}"
+    image: "${WEB_IMAGE}"
+    container_name: web
+    command: gunicorn chatapp.wsgi:application --timeout 60 --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/media
+    # expose:
+    #   - 8000
+    ports:
+      - 8000:8000
+    env_file: .env
+    # env_file: 
+    #   - ./.env.dev
+    networks:
+      - backendnet
+    mem_limit: 2.8g
+
+  nginx:
+    environment:
+      - DJANGO_MANAGEPY_MIGRATE=off
+      - DJANGO_MANAGEPY_COLLECTSTATIC=off
+      - DJANGO_MANAGEPY_CREATE_SUPERUSER=off
+    build:
+      context: ./staging-docker/nginx
+      cache_from:
+        - "${NGINX_IMAGE}"
+    image: "${NGINX_IMAGE}"
+    container_name: nginx
+    restart: always
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/media
+      # - ./nginx:/etc/nginx/conf.d
+      # - /etc/nginx/certs:/etc/nginx/certs
+      # - /var/run/docker.sock:/tmp/docker.sock:ro
+      # - /etc/certbot/conf:/etc/letsencrypt
+      # - /etc/certbot/www:/var/www/certbot
+    ports:
+      # - "443:443"
+      - "80:80"
+    networks:
+      - backendnet
+    depends_on:
+      - web
+    mem_limit: 0.7g
+
+  # redis:
+  #   environment:
+  #     - DJANGO_MANAGEPY_MIGRATE=off
+  #     - DJANGO_MANAGEPY_COLLECTSTATIC=off
+  #     - DJANGO_MANAGEPY_CREATE_SUPERUSER=off
+  #     - DJANGO_MANAGEPY_CREATE_PUBLIC_TENANT=off
+  #   build:
+  #     context: ./staging-docker/redis
+  #     cache_from:
+  #       - "${REDIS_IMAGE}"
+  #   image: "${REDIS_IMAGE}"
+  #   restart: always
+  #   container_name: redis_server
+  #   command: redis-server --appendonly yes
+  #   ports:
+  #     - 6380:6379
+  #   volumes:
+  #     - ./redis-volume:/data
+  #   networks:
+  #     - backendnet
+  #   mem_limit: 1.4g
+
+volumes:
+  static_volume:
+  media_volume:
+
+networks:
+  backendnet:
+    driver: bridge

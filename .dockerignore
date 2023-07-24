@@ -1,0 +1,42 @@
+.env
+venv
+*.py[cod]
+*.log
+*.pot
+*.pyc
+__pycache__
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles
+staticfiles/
+media/
+static_root/
+static_files/
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+redis-volume
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+# testing
+/coverage
+
+# other
+doc.txt
