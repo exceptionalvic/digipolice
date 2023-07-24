@@ -32,7 +32,7 @@ services:
       - DJANGO_MANAGEPY_MIGRATE=off
       - DJANGO_MANAGEPY_COLLECTSTATIC=off
     build:
-      context: ./staging-docker/nginx
+      context: ./deploy-docker/nginx
       cache_from:
         - "${NGINX_IMAGE}"
     image: "${NGINX_IMAGE}"
