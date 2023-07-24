@@ -11,4 +11,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 #COPY index.html /data/www/
 
 
-COPY reown.conf /etc/nginx/conf.d/digipolice.conf
+COPY digipolice.conf /etc/nginx/conf.d/digipolice.conf
