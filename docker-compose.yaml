@@ -14,7 +14,7 @@ services:
 
   daphne:
     build: .
-    command: daphne chatapp.wsgi:application --bind 0.0.0.0:8001
+    command: daphne chatapp.asgi:application --bind 0.0.0.0:8001
     expose:
       - 8001
     env_file:
