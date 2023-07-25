@@ -38,6 +38,9 @@ COPY . $APP_HOME
 
 RUN chmod +x entrypoint.sh
 
+# Expose the port for Daphne
+EXPOSE 8001
+
 RUN mkdir -p media
 RUN mkdir -p staticfiles
 
