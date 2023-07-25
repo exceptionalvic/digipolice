@@ -27,6 +27,8 @@ jobs:
           echo PERSONAL_ACCESS_TOKEN="${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          echo REDIS_IMAGE=${{ env.REDIS_IMAGE }} >> .env
+          echo DAPHNE_IMAGE=${{ env.DAPHNE_IMAGE }} >> .env
           
 
       - name: Set environment variables
@@ -34,7 +36,8 @@ jobs:
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
           echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
-          echo "DB_IMAGE=$(echo ${{env.DB_IMAGE}} )" >> $GITHUB_ENV
+          echo "REDIS_IMAGE=$(echo ${{env.REDIS_IMAGE}} )" >> $GITHUB_ENV
+          echo "DAPHNE_IMAGE=$(echo ${{env.DAPHNE_IMAGE}} )" >> $GITHUB_ENV
           
       - name: Log in to GitHub Container Registry
         run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
@@ -44,6 +47,8 @@ jobs:
         run: |
           docker pull "${{ env.WEB_IMAGE }}" || true
           docker pull "${{ env.NGINX_IMAGE }}" || true
+          docker pull "${{ env.REDIS_IMAGE }}" || true
+          docker pull "${{ env.DAPHNE_IMAGE }}" || true
       - name: Build staging images
         run: |
           docker-compose -f docker-compose.ci.yaml build
@@ -51,6 +56,8 @@ jobs:
         run: |
           docker push "${{ env.WEB_IMAGE }}"
           docker push "${{ env.NGINX_IMAGE }}"
+          docker push "${{ env.REDIS_IMAGE }}"
+          docker push "${{ env.DAPHNE_IMAGE }}"
   deploy:
     name: Deploy to Vultr 
     runs-on: ubuntu-latest
