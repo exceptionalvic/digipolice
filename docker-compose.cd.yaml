@@ -7,7 +7,7 @@ services:
       - DJANGO_MANAGEPY_COLLECTSTATIC=on
     image: "${WEB_IMAGE}"
     container_name: web
-    command: gunicorn chatapp.wsgi:application --timeout 60 --bind 0.0.0.0:8000
+    command: daphne chatapp.wsgi:application --timeout 60 --bind 0.0.0.0:8000
     volumes:
       - static_volume:/usr/src/app/staticfiles
       - media_volume:/usr/src/app/media
@@ -17,20 +17,24 @@ services:
     networks:
       - backendnet
     mem_limit: 2.8g
+    depends_on:
+      - redis
   
-  daphne:
-    environment:
-      - DJANGO_MANAGEPY_MIGRATE=off
-      - DJANGO_MANAGEPY_COLLECTSTATIC=off
-    image: "${DAPHNE_IMAGE}"
-    restart: always
-    container_name: daphne
-    command: daphne -b 0.0.0.0 -p 8001 chatapp.asgi:application
-    ports:
-      - 8001:8001
-    networks:
-      - backendnet
-    mem_limit: 1.4g
+  # daphne:
+  #   environment:
+  #     - DJANGO_MANAGEPY_MIGRATE=off
+  #     - DJANGO_MANAGEPY_COLLECTSTATIC=off
+  #   image: "${DAPHNE_IMAGE}"
+  #   restart: always
+  #   container_name: daphne
+  #   command: daphne -b 0.0.0.0 -p 8001 chatapp.asgi:application
+  #   ports:
+  #     - 8001:8001
+  #   networks:
+  #     - backendnet
+  #   mem_limit: 1.4g
+  #   depends_on:
+  #     - redis
 
   nginx:
     environment:
@@ -52,11 +56,9 @@ services:
       - "80:80"
     networks:
       - backendnet
+    mem_limit: 0.7g
     depends_on:
       - web
-      - daphne
-      - redis
-    mem_limit: 0.7g
   
   redis:
     environment:
@@ -72,6 +74,7 @@ services:
     volumes:
       - ./redis-volume:/data
     mem_limit: 1.4g
+
 
 volumes:
   static_volume:
