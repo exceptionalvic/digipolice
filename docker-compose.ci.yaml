@@ -13,7 +13,7 @@ services:
     image: "${WEB_IMAGE}"
     container_name: web
     # command: gunicorn chatapp.wsgi:application --timeout 60 --bind 0.0.0.0:8000
-    command: daphne chatapp.asgi:application --timeout 60 --bind 0.0.0.0:8000
+    command: daphne chatapp.asgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/usr/src/app/staticfiles
       - media_volume:/usr/src/app/media
