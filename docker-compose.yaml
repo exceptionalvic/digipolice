@@ -12,15 +12,15 @@ services:
       - static_volume:/staticfiles
       - media_volume:/media
 
-  daphne:
-    build: .
-    command: daphne chatapp.asgi:application --bind 0.0.0.0:8001
-    expose:
-      - 8001
-    env_file:
-      - .env
-    depends_on:
-      - db
+  # daphne:
+  #   build: .
+  #   command: daphne chatapp.asgi:application --bind 0.0.0.0:8001
+  #   expose:
+  #     - 8001
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
 
 
   nginx:
