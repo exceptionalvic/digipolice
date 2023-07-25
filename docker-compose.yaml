@@ -11,6 +11,14 @@ services:
     volumes:
       - static_volume:/staticfiles
       - media_volume:/media
+
+  daphne:
+    build: .
+    command: daphne chatapp.wsgi:application --bind 0.0.0.0:8001
+    expose:
+      - 8001
+    env_file:
+      - .env
     depends_on:
       - db
 
@@ -22,8 +30,6 @@ services:
       - media_volume:/media
     ports:
       - 1337:80
-    depends_on:
-      - web
 
 
 volumes:

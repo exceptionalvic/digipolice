@@ -8,6 +8,8 @@ on:
 env:
   WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
   NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
+  REDIS_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/redis
+  DAPHNE_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/daphne
 
 jobs:
   
@@ -64,6 +66,8 @@ jobs:
           echo PERSONAL_ACCESS_TOKEN="${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          echo REDIS_IMAGE=${{ env.REDIS_IMAGE }} >> .env
+          echo DAPHNE_IMAGE=${{ env.DAPHNE_IMAGE }} >> .env
       - name: Add the private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -88,6 +92,8 @@ jobs:
             docker rmi $(docker images -q)
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
+            docker pull $REDIS_IMAGE
+            docker pull $DAPHNE_IMAGE
             docker-compose -f docker-compose.cd.yaml up -d
           ENDSSH
   
