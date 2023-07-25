@@ -17,6 +17,20 @@ services:
     networks:
       - backendnet
     mem_limit: 2.8g
+  
+  daphne:
+    environment:
+      - DJANGO_MANAGEPY_MIGRATE=on
+      - DJANGO_MANAGEPY_COLLECTSTATIC=on
+    image: "${DAPHNE_IMAGE}"
+    restart: always
+    container_name: daphne
+    command: daphne chatapp.asgi:application --timeout 60 --bind 0.0.0.0 -p 8001
+    ports:
+      - 8001:8001
+    networks:
+      - backendnet
+    mem_limit: 1.4g
 
   nginx:
     environment:
@@ -45,7 +59,7 @@ services:
   redis:
     image: "${REDIS_IMAGE}"
     restart: always
-    container_name: redis_server
+    container_name: redis
     ports:
       - 6379:6379
     networks:
