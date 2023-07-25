@@ -8,3 +8,6 @@ def ChatView(request, *args, **kwargs):
     all_messages = InfoMessage.objects.all()
     context = {'messages':all_messages}
     return render(request, "chat/chatpage.html", context)
+
+def HomeView(request):
+    return redirect('chatview')

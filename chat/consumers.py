@@ -81,7 +81,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
-        location = js['city'],
+        try:
+            location = js['city']
+        except:
+            location = 'Not Detected'
         ip_address= str(get_host_ip),
         user = self.scope['user'].username
         

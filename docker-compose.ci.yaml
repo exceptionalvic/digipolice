@@ -55,31 +55,42 @@ services:
       - web
     mem_limit: 0.7g
 
-  # redis:
-  #   environment:
-  #     - DJANGO_MANAGEPY_MIGRATE=off
-  #     - DJANGO_MANAGEPY_COLLECTSTATIC=off
-  #     - DJANGO_MANAGEPY_CREATE_SUPERUSER=off
-  #     - DJANGO_MANAGEPY_CREATE_PUBLIC_TENANT=off
-  #   build:
-  #     context: ./staging-docker/redis
-  #     cache_from:
-  #       - "${REDIS_IMAGE}"
-  #   image: "${REDIS_IMAGE}"
-  #   restart: always
-  #   container_name: redis_server
-  #   command: redis-server --appendonly yes
-  #   ports:
-  #     - 6380:6379
-  #   volumes:
-  #     - ./redis-volume:/data
-  #   networks:
-  #     - backendnet
-  #   mem_limit: 1.4g
+  redis:
+    build:
+      context: ./deploy-docker/redis
+      cache_from:
+        - "${REDIS_IMAGE}"
+    image: "${REDIS_IMAGE}"
+    restart: always
+    container_name: redis_server
+    command: redis-server --appendonly yes
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis-volume:/data
+    networks:
+      - backendnet
+    mem_limit: 1.4g
+
+  daphne:
+    build:
+      context: ./deploy-docker/daphne
+      cache_from:
+        - "${DAPHNE_IMAGE}"
+    image: "${DAPHNE_IMAGE}"
+    restart: always
+    container_name: daphne_server
+    command: daphne chatapp.asgi:application --timeout 60 --bind 0.0.0.0 -p 8001
+    ports:
+      - 8001:8001
+    networks:
+      - backendnet
+    mem_limit: 1.4g
 
 volumes:
   static_volume:
   media_volume:
+  redis-volume:
 
 networks:
   backendnet:

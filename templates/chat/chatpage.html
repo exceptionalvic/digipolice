@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<head>
+<!-- <head>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+</head> -->
 
 <title>Message Intelligence Board - DigiPolice</title>
 <h5 class="text-muted text-center m-4">Hello {{request.user}}, Welcome to UK DigiPolice Intelligence</h5>
@@ -53,6 +53,7 @@
 	const chatSocket = new WebSocket(
 		'ws://' + window.location.host + '/ws/chat/'
 	);
+	// var ws_path = ws_scheme + '://' + window.location.host + ":8001/"; // PRODUCTION
 
 	chatSocket.onmessage = function (event) {
 		const data = JSON.parse(event.data);

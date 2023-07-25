@@ -5,4 +5,5 @@ from django.contrib.auth.views import LoginView, LogoutView
  
 urlpatterns = [
     path("", views.ChatView, name="chatview"),
+    
 ]

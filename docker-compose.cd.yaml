@@ -41,11 +41,23 @@ services:
     depends_on:
       - web
     mem_limit: 0.7g
+  
+  redis:
+    image: "${REDIS_IMAGE}"
+    restart: always
+    container_name: redis_server
+    ports:
+      - 6379:6379
+    networks:
+      - backendnet
+    volumes:
+      - ./redis-volume:/data
+    mem_limit: 1.4g
 
- 
 volumes:
   static_volume:
   media_volume:
+  redis-volume:
 
 networks:
   backendnet:
