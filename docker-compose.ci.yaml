@@ -17,6 +17,7 @@ services:
     volumes:
       - static_volume:/usr/src/app/staticfiles
       - media_volume:/usr/src/app/media
+      - db-data:/usr/src/app/db.sqlite3
     # expose:
     #   - 8000
     ports:
@@ -98,6 +99,7 @@ volumes:
   static_volume:
   media_volume:
   redis-volume:
+  db-data:
 
 networks:
   backendnet:
