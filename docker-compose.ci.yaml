@@ -5,6 +5,8 @@ services:
     environment:
       - DJANGO_MANAGEPY_MIGRATE=on
       - DJANGO_MANAGEPY_COLLECTSTATIC=on
+      - REDIS_HOST=redis  # Set the environment variable for Redis hostname
+      - REDIS_PORT=6379  # Set the environment variable for Redis port
     build:
       context: .
       dockerfile: Dockerfile

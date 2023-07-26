@@ -27,6 +27,8 @@ jobs:
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
           echo REDIS_IMAGE=${{ env.REDIS_IMAGE }} >> .env
+          echo REDIS_HOST=${{ env.REDIS_HOST }} >> .env
+          echo REDIS_PORT=${{ env.REDIS_PORT }} >> .env
           
 
       - name: Set environment variables
@@ -69,6 +71,8 @@ jobs:
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
           echo REDIS_IMAGE=${{ env.REDIS_IMAGE }} >> .env
+          echo REDIS_HOST=${{ env.REDIS_HOST }} >> .env
+          echo REDIS_PORT=${{ env.REDIS_PORT }} >> .env
       - name: Add the private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -93,9 +97,9 @@ jobs:
             docker stop redis
             docker rm redis
             docker rmi $(docker images -q)
+            docker pull $REDIS_IMAGE
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
-            docker pull $REDIS_IMAGE
             docker-compose -f docker-compose.cd.yaml up -d
           ENDSSH
   
