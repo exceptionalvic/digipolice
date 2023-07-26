@@ -7,7 +7,7 @@ services:
       - DJANGO_MANAGEPY_COLLECTSTATIC=on
     image: "${WEB_IMAGE}"
     container_name: web
-    command: daphne chatapp.wsgi:application --bind 0.0.0.0:8000
+    command: daphne chatapp.asgi:application
     volumes:
       - static_volume:/usr/src/app/staticfiles
       - media_volume:/usr/src/app/media
